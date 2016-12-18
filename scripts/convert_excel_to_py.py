@@ -1,5 +1,11 @@
 #coding=utf-8
 
+'''
+convert excel to python data
+author: cowboyyang
+date: 2016-12-18
+'''
+
 import xlrd
 import os
 import sys
@@ -98,7 +104,7 @@ class Excel2PythonDataConverter:
 
             if option == "repeated":
                 # 说明是数组类型
-                print "found repeated %s " % key
+                #print "found repeated %s " % key
                 array = []
                 structmeta = self.metadict.get(keytype)
                 if type_convert_map.get(keytype):
@@ -158,19 +164,18 @@ class Excel2PythonDataConverter:
         self.write_to_file(row_array_msg)
 
     def write_to_file(self, msg):
-        str1 = json.dumps(msg, indent=2, ensure_ascii=False).encode('utf-8')
+        content = json.dumps(msg, indent=2, ensure_ascii=False).encode('utf-8')
         visualfile = self.targetfile.split('.')[0] + ".py"
-        targetvisualfile = visualfile
-        if os.path.exists(targetvisualfile):
+        realfilename = os.path.join(self.outdir, visualfile)
+        if os.path.exists(realfilename):
             # 如果有旧文件，先删除
-            os.remove(targetvisualfile)
-        print targetvisualfile
-        handle = open(targetvisualfile, 'w')
+            os.remove(realfilename)
+        handle = open(realfilename, 'w')
         # 写入编码格式
         handle.writelines("#coding=utf-8\n")
         dictname = "configdata_" + self.metaname + " = \\" + "\n"
         handle.writelines(dictname)
-        handle.writelines(str1)
+        handle.writelines(content)
         handle.flush()
         handle.close()
 
